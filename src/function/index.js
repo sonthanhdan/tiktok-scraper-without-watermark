@@ -233,17 +233,16 @@ function tiklydown(url) {
      })
 }
 
-function dlpanda(url) {
+async function dlpanda(url) {
+     const res = await Axios.get('https://dlpanda.com/')
+     const $ = cheerio.load(res.data);
+     const token = $('#token').val()
      return new Promise((resolve, reject) => {
-          Axios.get(`https://dlpanda.com/?url=${url}`)
+          Axios.get(`https://dlpanda.com/?url=${url}&token=${token}`)
                .then(({ data }) => {
                     const $ = cheerio.load(data)
-                    let images = []
-                    $('div.card-body.row > div').get().map(rest => {
-                         var image = $(rest).find('img').attr('src')
-                         if (image) images.push(image)
-                    })
-                    resolve(images)
+                    const src = $('.domain-info-wrap div.card-body.row video').find('source').attr('src')
+                    resolve(src)
                })
                .catch(e => {
                     reject(e)
